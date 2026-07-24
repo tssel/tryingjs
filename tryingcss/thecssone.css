@@ -7,7 +7,7 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Open sans', sans-serif;
     background: linear-gradient(135deg, #7542e2 0%, #6a82e3 100%);
     min-height: 100dvh;
     display: flex;
@@ -16,3 +16,4 @@ body {
     align-items: center;
     color: #333333
 }
+
