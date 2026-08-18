@@ -1,5 +1,15 @@
-const words = ["apple", "grape", "lemon", "peach"] //must be 5 letters long
-const word = words[Math.floor(Math.random() * words.length)]
+let words = [];
+let word = "";
+fetch('words.txt') //must be 5 letters long words
+    .then(response => response.text())
+    .then(data => {
+        words = data.split(/\r?\n/).map(word => word.trim().toLowerCase()).filter(word => word.length === 5);
+        console.log("Words loaded: " + words.length);
+
+    word = words[Math.floor(Math.random() * words.length)];
+    console.log(word); //debugging only
+    render();
+    });
 
 const root = document.getElementById("app");
 
@@ -7,11 +17,22 @@ function render() {
     root.innerHTML = app();
 };
 
+let lives = 6;
+
 function app() {
     return `
     <h1>Wordle</h1>
-    <input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
-    <button onclick="checkGuess()">Submit Guess</button>
+    ${WordleGame()}
+    `
+};
+
+function WordleGame() {
+    return `
+    <p id="livestext">Lives remaining: ${lives}</p>
+    <form onsubmit="event.preventDefault(); checkGuess();">
+        <input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
+        <button type="submit">Submit Guess</button>
+    </form>
     <p id="result"></p>
     `
 };
@@ -21,7 +42,15 @@ function checkGuess() {
     if (words.includes(guess) && guess.length === 5) {
         if (guess === word) {
             document.getElementById("result").innerHTML = "Correct! The word was " + word;
+            document.getElementById("guess").disabled = true;
         } else {
+            lives--;
+            document.getElementById("livestext").innerHTML = "Lives remaining: " + lives;
+            if (lives <= 0) {
+                document.getElementById("result").innerHTML = "Game over! The word was " + word;
+                document.getElementById("guess").disabled = true;
+                return;
+            };
             const result = document.getElementById("result");
             const used = [false, false, false, false, false];
 
