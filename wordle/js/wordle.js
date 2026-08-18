@@ -17,20 +17,49 @@ function app() {
 };
 
 function checkGuess() {
-    const guess = document.getElementById("guess").value;
-    if (guess === word) {
-        document.getElementById("result").innerHTML = "Correct! The word was " + word;
-    } else {
-        document.getElementById("result").innerHTML = "Incorrect! Try again.";
-        for (let i = 0; i < guess.length; i++) {
-            if (guess[i] === word[i]) {
-                document.getElementById("result").innerHTML += `<br> ${guess[i]} ✓`;
-            } else if (word.includes(guess[i])) {
-                document.getElementById("result").innerHTML += `<br> ${guess[i]} -`;
-            } else {
-                document.getElementById("result").innerHTML += `<br> ${guess[i]} X`;
+    const guess = document.getElementById("guess").value.trim().toLowerCase();
+    if (words.includes(guess) && guess.length === 5) {
+        if (guess === word) {
+            document.getElementById("result").innerHTML = "Correct! The word was " + word;
+        } else {
+            const result = document.getElementById("result");
+            const used = [false, false, false, false, false];
+
+            result.innerHTML = "Incorrect! Try again.";
+
+            // Reserve correct-position letters first.
+            for (let i = 0; i < guess.length; i++) {
+                if (guess[i] === word[i]) {
+                    used[i] = true;
+                }
+            }
+
+            // Check the remaining letters against unused positions in the word.
+            for (let i = 0; i < guess.length; i++) {
+                if (guess[i] === word[i]) {
+                    result.innerHTML += `<br> ${guess[i]} ✓`;
+                } else {
+                    let found = false;
+
+                    for (let j = 0; j < word.length; j++) {
+                        if (guess[i] === word[j] && used[j] === false) {
+                            found = true;
+                            used[j] = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        result.innerHTML += `<br> ${guess[i]} -`;
+                    } else {
+                        result.innerHTML += `<br> ${guess[i]} X`;
+                    }
+                }
             }
         }
+    } else {
+        console.log("Invalid guess: " + guess);
+        document.getElementById("result").innerHTML = "Invalid guess.";
     }
 };
 
