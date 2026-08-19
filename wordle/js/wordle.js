@@ -1,25 +1,40 @@
-let words = [];
-let word = "";
-fetch('words.txt') //must be 5 letters long words
-    .then(response => response.text())
-    .then(data => {
-        words = data.split(/\r?\n/).map(word => word.trim().toLowerCase()).filter(word => word.length === 5);
-        console.log("Words loaded: " + words.length);
+    let words = [];
+    let word = "";
 
-    word = words[Math.floor(Math.random() * words.length)];
-    console.log(word); //debugging only
-    render();
-    });
+    let lives = 6;
+
+    let currentGuess = "";
+    let currentRow = 0;
+function startGame() {
+    loadWords();
+}
+
+async function loadWords() {
+    try {
+        fetch('words.txt') //must be 5 letters long words
+        .then(response => response.text())
+        .then(data => {
+            words = data.split(/\r?\n/).map(word => word.trim().toLowerCase()).filter(word => word.length === 5);
+            console.log("Words loaded: " + words.length);
+
+        word = words[Math.floor(Math.random() * words.length)];
+        console.log(word); //debugging only
+        render();
+        });
+    } catch (error) {
+        console.error("Error loading words:", error);
+    }
+}
+
 
 const root = document.getElementById("app");
-
 function render() {
     root.innerHTML = app();
 };
 
-let lives = 6;
 
 function app() {
+    
     return `
     <h1>Wordle</h1>
     ${WordleGame()}
@@ -30,7 +45,13 @@ function WordleGame() {
     return `
     <p id="livestext">Lives remaining: ${lives}</p>
     
-
+    <div class="row">
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </div>
 
     <div id="guess-form">
         <form onsubmit="event.preventDefault(); checkGuess();document.getElementById('guess').value = ''">
@@ -103,3 +124,5 @@ function checkGuess() {
         document.getElementById("result").innerHTML = "Invalid guess.";
     }
 };
+
+startGame();
