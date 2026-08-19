@@ -29,26 +29,38 @@ function app() {
 function WordleGame() {
     return `
     <p id="livestext">Lives remaining: ${lives}</p>
-    <form onsubmit="event.preventDefault(); checkGuess();">
-        <input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
-        <button type="submit">Submit Guess</button>
-    </form>
+    
+
+
+    <div id="guess-form">
+        <form onsubmit="event.preventDefault(); checkGuess();document.getElementById('guess').value = ''">
+            <input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
+            <button id="submit" type="submit">Submit Guess</button>
+        </form>
+    </div>
+
     <p id="result"></p>
     `
 };
 
 function checkGuess() {
+    if (lives <= 0) {
+        return;
+    }
+
     const guess = document.getElementById("guess").value.trim().toLowerCase();
     if (words.includes(guess) && guess.length === 5) {
         if (guess === word) {
             document.getElementById("result").innerHTML = "Correct! The word was " + word;
             document.getElementById("guess").disabled = true;
+            document.getElementById("submit").disabled = true;
         } else {
             lives--;
             document.getElementById("livestext").innerHTML = "Lives remaining: " + lives;
             if (lives <= 0) {
                 document.getElementById("result").innerHTML = "Game over! The word was " + word;
                 document.getElementById("guess").disabled = true;
+                document.getElementById("submit").disabled = true;
                 return;
             };
             const result = document.getElementById("result");
@@ -91,6 +103,3 @@ function checkGuess() {
         document.getElementById("result").innerHTML = "Invalid guess.";
     }
 };
-
-
-render()
