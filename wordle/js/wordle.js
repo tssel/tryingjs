@@ -109,21 +109,27 @@ let activetile = 0
 document.addEventListener("keydown", function(event) {
     const tiles = document.querySelectorAll(".tile");
     if (/^[a-zA-Z]$/.test(event.key)) {
-        const tiles = document.querySelectorAll(".tile");
-        tiles[activetile].textContent = event.key;
-        if (activetile >= 4) {
-            activetile = 0;
-        } else {
-            activetile++;
+        if (activetile >= 5) {
+            document.getElementById("result").innerHTML = "You can only enter 5 letters.";
+            return;
         }
+        tiles[activetile].textContent = event.key;
+        activetile++;
+        
     } else if (event.key === "Enter") {
         guess = "";
         for (let i = 0; i < 5; i++) {
             guess += tiles[i].textContent
         }
         checkGuess();
-        activetile = 0;
+    } else if (event.key === "Backspace") {
+        if (activetile > 0) {
+            activetile--;
+            tiles[activetile].textContent = ''
+        }
+        
     }
+
 });
 
 loadWords();
