@@ -3,17 +3,15 @@ let word = "";
 
 let lives = 6;
 
-let currentGuess = "";
 let guess = "";
 let gameover = false;
 
 async function loadWords() {
     const response = await fetch("words.txt");
     const text = await response.text();
-    words = text.split("\n").map(word => word.trim().toLowerCase());
-    
+    words = text.split("\n").map(word => word.trim().toLowerCase()).filter(word => word !== "" && word.length === 5);
     word = words[Math.floor(Math.random() * words.length)];
-    console.log('word is: '+ word);
+    //console.log('word is: '+ word);
     render();
 }
 
@@ -34,7 +32,6 @@ function app() {
 
 function WordleGame() {
     return `
-    <p id="livestext">Lives remaining: ${lives}</p>
     
     <div class="row">
         <div class="tile"></div>
@@ -94,19 +91,14 @@ function checkGuess() {
         const row = document.querySelectorAll(".row");
         const tiles = row[activerow].querySelectorAll(".tile");
         if (guess === word) {
-            document.getElementById("result").innerHTML = "Correct! The word was " + word;
+            document.getElementById("result").innerHTML = "Correct! The word was " + word.toUpperCase();
             for (let i = 0; i < guess.length; i++) {
                 tiles[i].style.backgroundColor = 'green'
             }
             gameover = true;
         } else {
             lives--;
-            document.getElementById("livestext").innerHTML = "Lives remaining: " + lives;
-            if (lives <= 0) {
-                document.getElementById("result").innerHTML = "Game over! The word was " + word;
-                gameover = true;
-                return;
-            };
+
             const result = document.getElementById("result");
             const used = [false, false, false, false, false];
 
@@ -141,6 +133,11 @@ function checkGuess() {
                     }
                 }
             }
+            if (lives <= 0) {
+                document.getElementById("result").innerHTML = "Game over! The word was " + word;
+                gameover = true;
+                return;
+            };
             activetile = 0;
             activerow++;
         }
@@ -165,7 +162,7 @@ document.addEventListener("keydown", function(event) {
             document.getElementById("result").innerHTML = "You can only enter 5 letters.";
             return;
         }
-        tiles[activetile].textContent = event.key;
+        tiles[activetile].textContent = event.key.toUpperCase();
         activetile++;
         
     } else if (event.key === "Enter") {
@@ -179,9 +176,7 @@ document.addEventListener("keydown", function(event) {
             activetile--;
             tiles[activetile].textContent = ''
         }
-        
     }
-
 });
 
 loadWords();
