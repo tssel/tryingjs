@@ -4,9 +4,8 @@ let word = "";
 let lives = 6;
 
 let currentGuess = "";
-let currentRow = 0;
 let guess = "";
-
+let gameover = false;
 
 async function loadWords() {
     const response = await fetch("words.txt");
@@ -14,7 +13,7 @@ async function loadWords() {
     words = text.split("\n").map(word => word.trim().toLowerCase());
     
     word = words[Math.floor(Math.random() * words.length)];
-    console.log(word);
+    console.log('word is: '+ word);
     render();
 }
 
@@ -44,6 +43,41 @@ function WordleGame() {
         <div class="tile"></div>
         <div class="tile"></div>
     </div>
+    <div class="row">
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </div>
+    <div class="row">
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </div>
+    <div class="row">
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </div>
+    <div class="row">
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </div>
+    <div class="row">
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </div>
 
     <p id="result"></p>
     `
@@ -52,16 +86,25 @@ function WordleGame() {
 function checkGuess() {
     if (lives <= 0) {
         return;
+    } else if (gameover === true) {
+        return;
     }
     guess = guess.trim().toLowerCase()
     if (words.includes(guess) && guess.length === 5) {
+        const row = document.querySelectorAll(".row");
+        const tiles = row[activerow].querySelectorAll(".tile");
         if (guess === word) {
             document.getElementById("result").innerHTML = "Correct! The word was " + word;
+            for (let i = 0; i < guess.length; i++) {
+                tiles[i].style.backgroundColor = 'green'
+            }
+            gameover = true;
         } else {
             lives--;
             document.getElementById("livestext").innerHTML = "Lives remaining: " + lives;
             if (lives <= 0) {
                 document.getElementById("result").innerHTML = "Game over! The word was " + word;
+                gameover = true;
                 return;
             };
             const result = document.getElementById("result");
@@ -69,17 +112,17 @@ function checkGuess() {
 
             result.innerHTML = "Incorrect! Try again.";
 
-            // Reserve correct-position letters first.
+            // Reserve correct position letters
             for (let i = 0; i < guess.length; i++) {
                 if (guess[i] === word[i]) {
                     used[i] = true;
                 }
             }
 
-            // Check the remaining letters against unused positions in the word.
+            // Check the remaining letters against unused positions in the word
             for (let i = 0; i < guess.length; i++) {
                 if (guess[i] === word[i]) {
-                    result.innerHTML += `<br> ${guess[i]} ✓`;
+                    tiles[i].style.backgroundColor = 'green'
                 } else {
                     let found = false;
 
@@ -92,12 +135,14 @@ function checkGuess() {
                     }
 
                     if (found) {
-                        result.innerHTML += `<br> ${guess[i]} -`;
+                        tiles[i].style.backgroundColor = 'yellow'
                     } else {
-                        result.innerHTML += `<br> ${guess[i]} X`;
+                        tiles[i].style.backgroundColor = 'red'
                     }
                 }
             }
+            activetile = 0;
+            activerow++;
         }
     } else {
         console.log("Invalid guess: " + guess);
@@ -105,9 +150,16 @@ function checkGuess() {
     }
 };
 
+let activerow = 0;
 let activetile = 0
 document.addEventListener("keydown", function(event) {
-    const tiles = document.querySelectorAll(".tile");
+    if (gameover === true) {
+        return;
+    }
+
+    const row = document.querySelectorAll(".row");
+    const tiles = row[activerow].querySelectorAll(".tile");
+    
     if (/^[a-zA-Z]$/.test(event.key)) {
         if (activetile >= 5) {
             document.getElementById("result").innerHTML = "You can only enter 5 letters.";
