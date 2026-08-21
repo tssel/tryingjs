@@ -76,7 +76,7 @@ function WordleGame() {
         <div class="tile"></div>
     </div>
 
-    <p id="result"></p>
+    <p id="result">Type to start</p>
     `
 };
 
