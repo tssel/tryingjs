@@ -1,29 +1,21 @@
-    let words = [];
-    let word = "";
+let words = [];
+let word = "";
 
-    let lives = 6;
+let lives = 6;
 
-    let currentGuess = "";
-    let currentRow = 0;
-function startGame() {
-    loadWords();
-}
+let currentGuess = "";
+let currentRow = 0;
+let guess = "";
+
 
 async function loadWords() {
-    try {
-        fetch('words.txt') //must be 5 letters long words
-        .then(response => response.text())
-        .then(data => {
-            words = data.split(/\r?\n/).map(word => word.trim().toLowerCase()).filter(word => word.length === 5);
-            console.log("Words loaded: " + words.length);
-
-        word = words[Math.floor(Math.random() * words.length)];
-        console.log(word); //debugging only
-        render();
-        });
-    } catch (error) {
-        console.error("Error loading words:", error);
-    }
+    const response = await fetch("words.txt");
+    const text = await response.text();
+    words = text.split("\n").map(word => word.trim().toLowerCase());
+    
+    word = words[Math.floor(Math.random() * words.length)];
+    console.log(word);
+    render();
 }
 
 
@@ -53,13 +45,6 @@ function WordleGame() {
         <div class="tile"></div>
     </div>
 
-    <div id="guess-form">
-        <form onsubmit="event.preventDefault(); checkGuess();document.getElementById('guess').value = ''">
-            <input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
-            <button id="submit" type="submit">Submit Guess</button>
-        </form>
-    </div>
-
     <p id="result"></p>
     `
 };
@@ -68,20 +53,15 @@ function checkGuess() {
     if (lives <= 0) {
         return;
     }
-
-    const guess = document.getElementById("guess").value.trim().toLowerCase();
+    guess = guess.trim().toLowerCase()
     if (words.includes(guess) && guess.length === 5) {
         if (guess === word) {
             document.getElementById("result").innerHTML = "Correct! The word was " + word;
-            document.getElementById("guess").disabled = true;
-            document.getElementById("submit").disabled = true;
         } else {
             lives--;
             document.getElementById("livestext").innerHTML = "Lives remaining: " + lives;
             if (lives <= 0) {
                 document.getElementById("result").innerHTML = "Game over! The word was " + word;
-                document.getElementById("guess").disabled = true;
-                document.getElementById("submit").disabled = true;
                 return;
             };
             const result = document.getElementById("result");
@@ -125,4 +105,25 @@ function checkGuess() {
     }
 };
 
-startGame();
+let activetile = 0
+document.addEventListener("keydown", function(event) {
+    const tiles = document.querySelectorAll(".tile");
+    if (/^[a-zA-Z]$/.test(event.key)) {
+        const tiles = document.querySelectorAll(".tile");
+        tiles[activetile].textContent = event.key;
+        if (activetile >= 4) {
+            activetile = 0;
+        } else {
+            activetile++;
+        }
+    } else if (event.key === "Enter") {
+        guess = "";
+        for (let i = 0; i < 5; i++) {
+            guess += tiles[i].textContent
+        }
+        checkGuess();
+        activetile = 0;
+    }
+});
+
+loadWords();
