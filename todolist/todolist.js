@@ -13,16 +13,27 @@ function render() {
 function app() {
     return `
     <p id="tasks"></p>
-    <button onclick=fetchtasks()>Click to fetch tasks</button>
-    <form onsubmit=addtask()>
-        <input placeholder='Enter your task here'></input>
+    <button onclick=>Click to fetch tasks</button>
+    <form onsubmit=addtask(event)>
+        <input id="taskinput" placeholder='Enter your task here'></input>
+        <button type="submit">Add task</button>
     </form>
     `;
 }
 function fetchtasks() {
     const taskstext = document.getElementById("tasks");
-    taskstext.textContent = tasks.map(task => task.title).join(", ");
+    taskstext.innerText = tasks.map(task => task.title).join("\n ");
 }
-function addtask() {
+function addtask(event) {
+    event.preventDefault();
+    const input = document.getElementById("taskinput");
+    const title = input.value.trim();
+    const newTask = {
+        id: tasks.length + 1,
+        title: title,
+        completed: false
+    };
+    tasks.push(newTask);
 }
 render();
+fetchtasks();
