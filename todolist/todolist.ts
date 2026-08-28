@@ -20,32 +20,40 @@ function render(): void {
 
 function app(): string {
     return `
-    <p id="tasks"></p>
-    <button onclick=>Click to fetch tasks</button>
-    <form onsubmit=addtask(event)>
+    <form onsubmit="addtask(event)">
         <input id="taskinput" placeholder='Enter your task here'></input>
         <button type="submit">Add task</button>
     </form>
+    <p id="tasks"></p>
     `
 }
 
 function fetchtasks(): void {
     const taskstext = document.getElementById("tasks") as HTMLParagraphElement
-    taskstext.innerText = tasks.map(task => task.title).join("\n ")
+    taskstext.innerHTML = tasks.map(task => `
+        <div>
+            <input type="checkbox" onchange ${task.completed ? "checked":""}>
+            <span ${task.completed ? "text-decoration: line-through" : ""}>${task.title}</span>
+        </div>
+
+    `).join("\n ")
 }
 
 function addtask(event: SubmitEvent): void {
     event.preventDefault()
     const input = document.getElementById("taskinput") as HTMLInputElement
     const title = input.value.trim()
-
+    if (title == "") {
+        return;
+    }
     const newTask: Task = {
         id: tasks.length + 1,
         title: title,
         completed: false
     }
     tasks.push(newTask)
-
+    input.value = ""
+    fetchtasks()
 }
 
 
