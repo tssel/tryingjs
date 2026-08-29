@@ -12,6 +12,7 @@ function render() {
 }
 function app() {
     return `
+    <h1>To Do List</h1>
     <form onsubmit="addtask(event)">
         <input id="taskinput" placeholder='Enter your task here'></input>
         <button type="submit">Add task</button>
@@ -24,7 +25,7 @@ function fetchtasks() {
     taskstext.innerHTML = tasks.map(task => `
         <div>
             <input type="checkbox" onchange ${task.completed ? "checked" : ""}>
-            <span ${task.completed ? "text-decoration: line-through" : ""}>${task.title}</span>
+            <span>${task.title}</span>
         </div>
 
     `).join("\n ");
