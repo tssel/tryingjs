@@ -13,19 +13,20 @@ let habits = [
     {
         id: 1,
         name: "Go to gym",
-        completed: false
+        completed: []
     },
     {
         id: 2,
         name: "Eat healthy",
-        completed: true
+        completed: []
     }
 ];
 function fetchHabits() {
     const habitviewer = document.getElementById("habitviewer");
     habitviewer.innerHTML = habits
         .map(habit => `
-        <p>${habit.name} - ${habit.completed ? "not yet completed" : "completed"}</p>
+        <p>${habit.name}</p>
+        <button onclick="completeHabit(${habit.id})">Done</button>
         `).join("");
 }
 function addHabit() {
@@ -34,10 +35,15 @@ function addHabit() {
     const newHabit = {
         id: habits.length + 1,
         name: habitname,
-        completed: false
+        completed: []
     };
     habits.push(newHabit);
     input.value = "";
     fetchHabits();
+}
+function completeHabit(habitselected) {
+    const today = new Date().toISOString().split("T")[0];
+    const completed = habits[habitselected - 1].completed;
+    habits[habitselected - 1].completed.push(today);
 }
 fetchHabits();

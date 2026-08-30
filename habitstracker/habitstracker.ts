@@ -1,7 +1,7 @@
 type habit = {
     id: number,
     name: string,
-    completed: boolean
+    completed: string[]
 }
 
 const root = document.getElementById("app") as HTMLDivElement
@@ -21,20 +21,21 @@ let habits: habit[] = [
     {
         id: 1,
         name: "Go to gym",
-        completed: false
+        completed: []
     },
     {
         id: 2,
         name: "Eat healthy",
-        completed: true
+        completed: []
     }
 ]
 
 function fetchHabits(): void {
     const habitviewer = document.getElementById("habitviewer") as HTMLDivElement
     habitviewer.innerHTML = habits
-    .map(habit => `
-        <p>${habit.name} - ${habit.completed ? "not yet completed" : "completed"}</p>
+    .map(habit =>`
+        <p>${habit.name}</p>
+        <button onclick="completeHabit(${habit.id})">Done</button>
         `
     ).join("")
 }
@@ -45,11 +46,19 @@ function addHabit() {
     const newHabit: habit = {
         id: habits.length + 1,
         name: habitname,
-        completed: false
+        completed: []
     }
     habits.push(newHabit)
     input.value = ""
     fetchHabits()
+}
+
+function completeHabit(habitselected: number): void {
+    const today = new Date().toISOString().split("T")[0]
+    const completed = habits[habitselected - 1].completed
+
+
+    habits[habitselected - 1].completed.push(today)
 }
 
 fetchHabits()
