@@ -4,23 +4,26 @@ root.innerHTML = app();
 function app() {
     return `
     <h1>Habits Tracker</h1>
+    <button onclick="saveHabits()">Save Habits</button>
     <div id="habitviewer"></div>
     <input id="habitname">
     <button onclick="addHabit()">Add Habit</button>
     `;
 }
-let habits = [
-    {
-        id: 1,
-        name: "Go to gym",
-        completed: ["2026-08-29"]
-    },
-    {
-        id: 2,
-        name: "Eat healthy",
-        completed: ["2026-08-29"]
-    }
-];
+const storedHabits = localStorage.getItem("habits");
+let habits;
+if (storedHabits) {
+    habits = JSON.parse(storedHabits);
+}
+else {
+    habits = [
+        {
+            id: 1,
+            name: "go to gym",
+            completed: ["2026-08-29"]
+        }
+    ];
+}
 function fetchHabits() {
     const habitviewer = document.getElementById("habitviewer");
     habitviewer.innerHTML = habits
@@ -39,6 +42,7 @@ function addHabit() {
     };
     habits.push(newHabit);
     input.value = "";
+    saveHabits();
     fetchHabits();
 }
 function completeHabit(habitselected) {
@@ -51,5 +55,8 @@ function completeHabit(habitselected) {
         completed.push(today);
     }
     fetchHabits();
+}
+function saveHabits() {
+    localStorage.setItem("habits", JSON.stringify(habits));
 }
 fetchHabits();
