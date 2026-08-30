@@ -21,12 +21,12 @@ let habits: habit[] = [
     {
         id: 1,
         name: "Go to gym",
-        completed: []
+        completed: ["2026-08-29"]
     },
     {
         id: 2,
         name: "Eat healthy",
-        completed: []
+        completed: ["2026-08-29"]
     }
 ]
 
@@ -34,7 +34,7 @@ function fetchHabits(): void {
     const habitviewer = document.getElementById("habitviewer") as HTMLDivElement
     habitviewer.innerHTML = habits
     .map(habit =>`
-        <p>${habit.name}</p>
+        <p>${habit.name} - ${habit.completed.join(", ")}</p>
         <button onclick="completeHabit(${habit.id})">Done</button>
         `
     ).join("")
@@ -57,8 +57,12 @@ function completeHabit(habitselected: number): void {
     const today = new Date().toISOString().split("T")[0]
     const completed = habits[habitselected - 1].completed
 
-
-    habits[habitselected - 1].completed.push(today)
+    if (completed.includes(today)) {
+        completed.splice(completed.indexOf(today), 1)
+    } else {
+        completed.push(today)
+    }
+    fetchHabits()
 }
 
 fetchHabits()
