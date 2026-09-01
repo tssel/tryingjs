@@ -14,6 +14,7 @@ const storedHabits = localStorage.getItem("habits");
 let habits;
 if (storedHabits) {
     habits = JSON.parse(storedHabits);
+    console.log("Loaded Habits from local storage");
 }
 else {
     habits = [
@@ -23,6 +24,7 @@ else {
             completed: ["2026-08-29"]
         }
     ];
+    console.log("No Habits found in local storage");
 }
 function fetchHabits() {
     const habitviewer = document.getElementById("habitviewer");
@@ -30,6 +32,7 @@ function fetchHabits() {
         .map(habit => `
         <p>${habit.name} - ${habit.completed.join(", ")}</p>
         <button onclick="completeHabit(${habit.id})">Done</button>
+        <button onclick="deleteHabit(${habit.id})">Delete</button>
         `).join("");
 }
 function addHabit() {
@@ -46,14 +49,24 @@ function addHabit() {
     fetchHabits();
 }
 function completeHabit(habitselected) {
+    const index = habits.findIndex(habit => habit.id === habitselected);
+    if (index == -1)
+        return;
     const today = new Date().toISOString().split("T")[0];
-    const completed = habits[habitselected - 1].completed;
+    const completed = habits[index].completed;
     if (completed.includes(today)) {
         completed.splice(completed.indexOf(today), 1);
     }
     else {
         completed.push(today);
     }
+    saveHabits();
+    fetchHabits();
+}
+function deleteHabit(habitselected) {
+    const index = habits.findIndex(habit => habit.id === habitselected);
+    habits.splice(index, 1);
+    saveHabits();
     fetchHabits();
 }
 function saveHabits() {
