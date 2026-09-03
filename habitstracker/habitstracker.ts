@@ -23,13 +23,16 @@ let habits: habit[]
 
 if (storedHabits) {
     habits = JSON.parse(storedHabits)
+    if (habits.length === 0) {
+        console.log("Habits array not found")
+    }
     console.log("Loaded Habits from local storage")
 } else {
     habits = [
         {
             id: 1,
-            name: "go to gym",
-            completed: ["2026-08-29"]
+            name: "Eat healthy",
+            completed: ["2026-08-29","2026-08-22"]
         }
     ]
     console.log("No Habits found in local storage")
@@ -40,9 +43,12 @@ function fetchHabits(): void {
     const habitviewer = document.getElementById("habitviewer") as HTMLDivElement
     habitviewer.innerHTML = habits
     .map(habit =>`
-        <p>${habit.name} - ${habit.completed.join(", ")}</p>
+        <p class="habitName">${habit.name} - ${habit.completed.join(", ")}</p>
         <button onclick="completeHabit(${habit.id})">Done</button>
         <button onclick="deleteHabit(${habit.id})">Delete</button>
+        <div class="heatmap">
+            ${createHeatmap(habit)}
+        </div>
         `
     ).join("")
 }
@@ -50,6 +56,9 @@ function fetchHabits(): void {
 function addHabit() {
     const input = document.getElementById("habitname") as HTMLInputElement
     const habitname = input.value.trim()
+
+    if (habitname == "") return
+    
     const newHabit: habit = {
         id: habits.length + 1,
         name: habitname,
@@ -87,6 +96,28 @@ function deleteHabit(habitselected:number): void {
 
 function saveHabits() {
     localStorage.setItem("habits",JSON.stringify(habits))
+}
+
+//trying this out
+function createHeatmap(habit: habit): string {
+  const days = []
+
+  for (let i = 34; i >= 0; i--) {
+    const date = new Date()
+    date.setDate(date.getDate() - i)
+
+    const dateString = date.toISOString().split("T")[0]
+    const completed = habit.completed.includes(dateString)
+
+    days.push(`
+      <div 
+        class="heatmap-day ${completed ? "completed" : ""}"
+        title="${dateString}"
+      ></div>
+    `)
+  }
+
+  return days.join("")
 }
 
 fetchHabits()
